@@ -398,13 +398,13 @@ function initVoicePlayer() {
   const timeEl    = document.getElementById('voiceTime');
   const wave      = player.querySelector('.voice-wave');
 
-  // Only show player if the audio file actually loads
-  audio.addEventListener('canplaythrough', () => {
-    player.style.display = 'block';
-  }, { once: true });
+  // Show the player immediately — don't wait for canplaythrough
+  // (many browsers delay that event until user interaction)
+  player.style.display = 'block';
 
+  // Hide only if there's a genuine file error (404 etc.)
   audio.addEventListener('error', () => {
-    player.style.display = 'none'; // Silently hide if file missing
+    player.style.display = 'none';
   });
 
   // Format seconds → m:ss
