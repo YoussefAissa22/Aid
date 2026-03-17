@@ -551,6 +551,353 @@ body {
 #greetingScreen::-webkit-scrollbar-track { background: transparent; }
 #greetingScreen::-webkit-scrollbar-thumb { background: rgba(201,162,39,0.3); border-radius: 10px; }
 
+/* ============================================================
+   ANIMATED LANTERNS
+   Two groups float up on left and right sides of the screen.
+   Each lantern is pure CSS — no images needed.
+============================================================ */
+.lanterns-left,
+.lanterns-right {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 90px;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.lanterns-left  { left: 0; }
+.lanterns-right { right: 0; }
+
+/* Individual lantern */
+.lantern {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: lanternFloat linear infinite;
+  opacity: 0;
+}
+
+/* Staggered positions and timings for each lantern */
+.l1 { left: 10px;  width: 28px; animation-duration: 18s; animation-delay: 0s;    bottom: -120px; }
+.l2 { left: 45px;  width: 22px; animation-duration: 24s; animation-delay: -8s;   bottom: -120px; }
+.l3 { left: 20px;  width: 32px; animation-duration: 20s; animation-delay: -14s;  bottom: -120px; }
+.l4 { right: 10px; width: 30px; animation-duration: 22s; animation-delay: -4s;   bottom: -120px; }
+.l5 { right: 48px; width: 24px; animation-duration: 19s; animation-delay: -11s;  bottom: -120px; }
+.l6 { right: 18px; width: 26px; animation-duration: 26s; animation-delay: -17s;  bottom: -120px; }
+
+@keyframes lanternFloat {
+  0%   { transform: translateY(0)    rotate(-4deg); opacity: 0;   }
+  5%   { opacity: 0.85; }
+  50%  { transform: translateY(-55vh) rotate(4deg);  opacity: 0.7; }
+  95%  { opacity: 0.5; }
+  100% { transform: translateY(-105vh) rotate(-3deg); opacity: 0; }
+}
+
+/* Lantern body — hexagonal-ish shape */
+.lantern-body {
+  width: 100%;
+  aspect-ratio: 0.65;
+  background: linear-gradient(160deg, #c9530a 0%, #8b1a00 60%, #5a0f00 100%);
+  border-radius: 40% 40% 50% 50% / 30% 30% 50% 50%;
+  position: relative;
+  box-shadow:
+    0 0 14px rgba(255, 120, 30, 0.7),
+    0 0 30px rgba(255, 80, 0, 0.3),
+    inset 0 0 10px rgba(255, 200, 50, 0.25);
+  overflow: hidden;
+}
+/* Warm inner glow */
+.lantern-shine {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 40% 30%, rgba(255,200,80,0.35) 0%, transparent 70%);
+  animation: lanternPulse 2.5s ease-in-out infinite alternate;
+}
+@keyframes lanternPulse {
+  from { opacity: 0.6; }
+  to   { opacity: 1; }
+}
+
+/* Top string */
+.lantern-string {
+  width: 1.5px;
+  height: 12px;
+  background: rgba(201, 162, 39, 0.7);
+  order: -1; /* sits above body */
+}
+
+/* Flame on top */
+.lantern-flame {
+  width: 6px;
+  height: 9px;
+  background: radial-gradient(ellipse at 50% 80%, #ffe066 0%, #ff8800 60%, transparent 100%);
+  border-radius: 50% 50% 30% 30%;
+  order: -2;
+  animation: flameDance 0.8s ease-in-out infinite alternate;
+  filter: blur(0.5px);
+}
+@keyframes flameDance {
+  from { transform: scaleX(1)   scaleY(1);   }
+  to   { transform: scaleX(0.8) scaleY(1.15); }
+}
+
+/* Bottom tassel */
+.lantern-tassel {
+  width: 2px;
+  height: 14px;
+  background: linear-gradient(to bottom, #c9a227, transparent);
+  border-radius: 0 0 2px 2px;
+}
+
+/* Hide lanterns on very small screens to avoid clutter */
+@media (max-width: 480px) {
+  .lanterns-left, .lanterns-right { display: none; }
+}
+
+/* ============================================================
+   ARABIC CALLIGRAPHY
+============================================================ */
+.arabic-calligraphy {
+  position: relative;
+  text-align: center;
+  margin-bottom: 0.4rem;
+  animation: fadeInUp 1s 0.3s both;
+}
+.arabic-text {
+  font-family: 'Amiri', serif;
+  font-size: clamp(2.8rem, 8vw, 4.5rem);
+  font-weight: 700;
+  color: transparent;
+  background: linear-gradient(135deg, #f5d78e 0%, #c9a227 40%, #fff8e1 60%, #c9a227 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  display: block;
+  text-shadow: none;
+  filter: drop-shadow(0 0 18px rgba(201,162,39,0.55));
+  position: relative;
+  z-index: 1;
+}
+/* Soft radial glow behind the Arabic text */
+.calligraphy-glow {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(ellipse at center, rgba(201,162,39,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   VOICE MESSAGE PLAYER
+============================================================ */
+.voice-player {
+  width: 100%;
+  max-width: 480px;
+  animation: fadeInUp 0.7s both;
+}
+.voice-player-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 16px;
+  padding: 1.1rem 1.4rem;
+}
+
+/* Play button with ripple */
+.voice-icon-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.voice-ripple {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(201,162,39,0.4);
+  animation: rippleRing 2s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes rippleRing {
+  0%   { transform: scale(0.8); opacity: 0.7; }
+  100% { transform: scale(1.5); opacity: 0;   }
+}
+.voice-play-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c9a227, #8b6914);
+  border: none;
+  color: var(--sky-deep);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(201,162,39,0.4);
+}
+.voice-play-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(201,162,39,0.6);
+}
+
+.voice-info { flex: 1; min-width: 0; }
+.voice-label {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.04em;
+}
+.voice-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.voice-progress-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.voice-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, #c9a227, #f5d78e);
+  border-radius: 3px;
+  transition: width 0.3s linear;
+}
+.voice-time {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+  min-width: 28px;
+}
+
+/* Animated waveform bars */
+.voice-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+}
+.voice-wave span {
+  display: block;
+  width: 3px;
+  background: rgba(201,162,39,0.5);
+  border-radius: 2px;
+  animation: waveBar 1.1s ease-in-out infinite alternate;
+}
+.voice-wave span:nth-child(1)  { height: 4px;  animation-delay: 0s;    }
+.voice-wave span:nth-child(2)  { height: 10px; animation-delay: 0.1s;  }
+.voice-wave span:nth-child(3)  { height: 14px; animation-delay: 0.2s;  }
+.voice-wave span:nth-child(4)  { height: 8px;  animation-delay: 0.3s;  }
+.voice-wave span:nth-child(5)  { height: 16px; animation-delay: 0.15s; }
+.voice-wave span:nth-child(6)  { height: 6px;  animation-delay: 0.25s; }
+.voice-wave span:nth-child(7)  { height: 12px; animation-delay: 0.05s; }
+.voice-wave span:nth-child(8)  { height: 9px;  animation-delay: 0.35s; }
+.voice-wave span:nth-child(9)  { height: 5px;  animation-delay: 0.4s;  }
+.voice-wave span:nth-child(10) { height: 13px; animation-delay: 0.18s; }
+
+@keyframes waveBar {
+  from { transform: scaleY(0.4); opacity: 0.4; }
+  to   { transform: scaleY(1);   opacity: 1;   }
+}
+/* Pause waveform when not playing */
+.voice-wave.paused span { animation-play-state: paused; }
+
+/* ============================================================
+   GUEST BOOK
+============================================================ */
+.guestbook {
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 18px;
+  padding: 1.8rem 1.6rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.8s both;
+}
+
+.guestbook-header {
+  text-align: center;
+  margin-bottom: 1.4rem;
+}
+.guestbook-icon {
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.guestbook-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--gold-light);
+  margin-bottom: 0.25rem;
+}
+.guestbook-sub {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  font-style: italic;
+}
+
+.guestbook-form-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.gb-input,
+.gb-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--text-main);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: none;
+}
+.gb-input::placeholder,
+.gb-textarea::placeholder { color: rgba(184,169,122,0.45); }
+.gb-input:focus,
+.gb-textarea:focus {
+  border-color: rgba(201,162,39,0.55);
+  box-shadow: 0 0 0 3px rgba(201,162,39,0.08);
+}
+
+.gb-submit {
+  align-self: center;
+  margin-top: 0.3rem;
+}
+
+/* Success state */
+.guestbook-success {
+  text-align: center;
+  padding: 1rem;
+  animation: blessingReveal 0.6s both;
+}
+.success-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.guestbook-success p {
+  font-family: 'Amiri', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--gold-light);
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 480px) {
   .moon-container { width: 75px; height: 75px; right: 20px; top: 20px; }
@@ -559,4 +906,5 @@ body {
   .message-box    { padding: 1rem 1.2rem; }
   .photo-frame    { width: 140px; height: 140px; }
   #greetingScreen { padding-top: 60px; }
+  .arabic-text    { font-size: 2.5rem; }
 }
