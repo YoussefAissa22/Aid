@@ -18,6 +18,63 @@
   <canvas id="confettiCanvas"></canvas>
 
   <!-- ============================================================
+       ANIMATED LANTERNS (CSS only, floating up both sides)
+  ============================================================ -->
+  <div class="lanterns-left" aria-hidden="true">
+    <div class="lantern l1">
+      <div class="lantern-body"><div class="lantern-shine"></div></div>
+      <div class="lantern-flame"></div>
+      <div class="lantern-string"></div>
+      <div class="lantern-tassel"></div>
+    </div>
+    <div class="lantern l2">
+      <div class="lantern-body"><div class="lantern-shine"></div></div>
+      <div class="lantern-flame"></div>
+      <div class="lantern-string"></div>
+      <div class="lantern-tassel"></div>
+    </div>
+    <div class="lantern l3">
+      <div class="lantern-body"><div class="lantern-shine"></div></div>
+      <div class="lantern-flame"></div>
+      <div class="lantern-string"></div>
+      <div class="lantern-tassel"></div>
+    </div>
+  </div>
+  <div class="lanterns-right" aria-hidden="true">
+    <div class="lantern l4">
+      <div class="lantern-body"><div class="lantern-shine"></div></div>
+      <div class="lantern-flame"></div>
+      <div class="lantern-string"></div>
+      <div class="lantern-tassel"></div>
+    </div>
+    <div class="lantern l5">
+      <div class="lantern-body"><div class="lantern-shine"></div></div>
+      <div class="lantern-flame"></div>
+      <div class="lantern-string"></div>
+      <div class="lantern-tassel"></div>
+    </div>
+    <div class="lantern l6">
+      <div class="lantern-body"><div class="lantern-shine"></div></div>
+      <div class="lantern-flame"></div>
+      <div class="lantern-string"></div>
+      <div class="lantern-tassel"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       AUDIO: chime for envelope + shared Eid voice message
+       Place your audio files in an /audio/ folder:
+         audio/chime.mp3   — plays when envelope opens
+         audio/eid.mp3     — voice message auto-plays on greeting screen
+  ============================================================ -->
+  <audio id="chimeSound" preload="auto">
+    <source src="audio/chime.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="voiceMessage" preload="auto">
+    <source src="audio/eid.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- ============================================================
        CRESCENT MOON (SVG inline so no image file needed)
   ============================================================ -->
   <div class="moon-container" id="moonContainer">
@@ -111,6 +168,12 @@
         </svg>
       </div>
 
+      <!-- Arabic Calligraphy -->
+      <div class="arabic-calligraphy" aria-label="Eid Mubarak in Arabic">
+        <span class="arabic-text">عيد مبارك</span>
+        <div class="calligraphy-glow"></div>
+      </div>
+
       <!-- Personalized heading -->
       <h2 class="greeting-title">
         Eid Mubarak <span id="recipientName" class="name-highlight"></span> <span class="moon-emoji">🌙</span>
@@ -149,6 +212,78 @@
         <div class="blessing-inner">
           <span class="blessing-icon">☽</span>
           <p id="blessingText" class="blessing-text"></p>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           VOICE MESSAGE PLAYER (shown after envelope opens)
+           Hidden until audio file is detected
+      ============================================================ -->
+      <div class="voice-player" id="voicePlayer" style="display:none;">
+        <div class="voice-player-inner">
+          <div class="voice-icon-wrap">
+            <div class="voice-ripple"></div>
+            <button class="voice-play-btn" id="voicePlayBtn" aria-label="Play voice message">
+              <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" width="22" height="22" style="display:none;">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="voice-info">
+            <p class="voice-label">A voice message for you 🎙️</p>
+            <div class="voice-bar-wrap">
+              <div class="voice-progress-bar">
+                <div class="voice-progress-fill" id="voiceProgressFill"></div>
+              </div>
+              <span class="voice-time" id="voiceTime">0:00</span>
+            </div>
+            <div class="voice-wave" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           GUEST BOOK — recipients can leave a reply
+           Powered by Formspree
+      ============================================================ -->
+      <div class="guestbook" id="guestbook" style="display:none;">
+        <div class="guestbook-header">
+          <span class="guestbook-icon">📖</span>
+          <h3 class="guestbook-title">Leave a reply</h3>
+          <p class="guestbook-sub">Write back your Eid wishes</p>
+        </div>
+
+        <div class="guestbook-form-wrap" id="guestbookFormWrap">
+          <input
+            type="text"
+            id="gbName"
+            class="gb-input"
+            placeholder="Your name"
+            maxlength="60"
+          />
+          <textarea
+            id="gbMessage"
+            class="gb-textarea"
+            placeholder="Write your Eid wish here… ✨"
+            maxlength="400"
+            rows="3"
+          ></textarea>
+          <button class="btn-primary gb-submit" id="gbSubmitBtn">
+            <span class="btn-text">Send your wish 🌙</span>
+            <span class="btn-glow"></span>
+          </button>
+        </div>
+
+        <!-- Success message shown after submission -->
+        <div class="guestbook-success" id="guestbookSuccess" style="display:none;">
+          <span class="success-icon">✨</span>
+          <p>Your wish has been sent — Eid Mubarak! 🌙</p>
         </div>
       </div>
 
