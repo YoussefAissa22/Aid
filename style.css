@@ -1,0 +1,562 @@
+/* ============================================================
+   EID MUBARAK — style.css
+   Aesthetic: Deep indigo night sky + gold Islamic ornament
+   Fonts: Cinzel Decorative (display) + Amiri (Arabic) + Lato (body)
+   ============================================================ */
+
+/* ---------- CSS VARIABLES ---------- */
+:root {
+  --sky-deep:    #06051a;
+  --sky-mid:     #0d1340;
+  --sky-purple:  #1a1050;
+  --gold:        #c9a227;
+  --gold-light:  #f5d78e;
+  --gold-pale:   #fff8e1;
+  --text-main:   #f0e6c8;
+  --text-sub:    #b8a97a;
+  --envelope-bg: #1e1645;
+  --envelope-flap: #2a1f6a;
+  --seal-color:  #c9a227;
+  --radius:      18px;
+  --transition:  0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- RESET & BASE ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  background: radial-gradient(ellipse at 30% 20%, var(--sky-purple) 0%, var(--sky-mid) 40%, var(--sky-deep) 100%);
+  min-height: 100vh;
+  color: var(--text-main);
+  position: relative;
+}
+
+/* ---------- CANVASES ---------- */
+/* Star field — behind everything */
+#starCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Confetti — in front of everything */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+#confettiCanvas.active { opacity: 1; }
+
+/* ---------- MOON ---------- */
+.moon-container {
+  position: fixed;
+  top: 30px;
+  right: 50px;
+  width: 110px;
+  height: 110px;
+  z-index: 2;
+  animation: moonFloat 7s ease-in-out infinite;
+  pointer-events: none;
+}
+.moon-svg { width: 100%; height: 100%; }
+
+@keyframes moonFloat {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); }
+  50%       { transform: translateY(-14px) rotate(0deg); }
+}
+
+/* ---------- TOP ORNAMENT ---------- */
+.ornament-top {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--gold);
+  font-size: 0.7rem;
+  letter-spacing: 0.5rem;
+  opacity: 0.55;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ---------- SCREENS ---------- */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  transform: translateY(20px);
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+.screen.exit {
+  opacity: 0;
+  transform: translateY(-30px);
+  pointer-events: none;
+}
+
+/* ---------- SCREEN 1: LANDING ---------- */
+.landing-content {
+  text-align: center;
+  max-width: 600px;
+  padding: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.landing-subtitle {
+  font-family: 'Amiri', serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  margin-bottom: 1.8rem;
+  opacity: 0.85;
+  animation: fadeInUp 1s 0.2s both;
+}
+
+.landing-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--gold-pale);
+  text-shadow: 0 0 40px rgba(201, 162, 39, 0.4);
+  margin-bottom: 2rem;
+  animation: fadeInUp 1s 0.5s both;
+}
+.landing-title em {
+  font-style: italic;
+  color: var(--gold-light);
+  display: block;
+}
+
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  animation: fadeInUp 1s 0.7s both;
+}
+.ornament-divider .line {
+  display: block;
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+}
+.star-ornament {
+  color: var(--gold);
+  font-size: 1.1rem;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 2.4rem;
+  background: transparent;
+  border: 1.5px solid var(--gold);
+  color: var(--gold-pale);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 50px;
+  overflow: hidden;
+  transition: color var(--transition), border-color var(--transition), box-shadow var(--transition);
+  animation: fadeInUp 1s 1s both;
+}
+.btn-primary:hover {
+  color: var(--sky-deep);
+  border-color: var(--gold-light);
+  box-shadow: 0 0 30px rgba(201, 162, 39, 0.6);
+}
+.btn-primary:hover .btn-glow {
+  transform: scaleX(1);
+}
+.btn-glow {
+  position: absolute;
+  inset: 0;
+  background: var(--gold-light);
+  border-radius: 50px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+.btn-text { position: relative; z-index: 1; }
+
+.btn-secondary {
+  margin-top: 1.5rem;
+  background: transparent;
+  border: 1px solid rgba(201, 162, 39, 0.5);
+  color: var(--text-sub);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.8rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-secondary:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ---------- SCREEN 2: ENVELOPE ---------- */
+.envelope-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.tap-hint {
+  font-family: 'Amiri', serif;
+  font-style: italic;
+  color: var(--text-sub);
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+/* ---- Envelope structure ---- */
+.envelope {
+  position: relative;
+  width: min(320px, 85vw);
+  height: 200px;
+  cursor: pointer;
+  perspective: 600px;
+  animation: envelopeFloat 4s ease-in-out infinite;
+  /* The envelope auto-opens when .open class is added by JS */
+}
+
+@keyframes envelopeFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* Envelope body (the rectangular part) */
+.envelope-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, var(--envelope-bg) 0%, #150f38 100%);
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  border-radius: 4px 4px 12px 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,162,39,0.1);
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Decorative diagonal fold lines inside envelope */
+.envelope-pattern {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(201,162,39,0.04) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(201,162,39,0.04) 0%, transparent 50%);
+}
+.envelope-pattern::before,
+.envelope-pattern::after {
+  content: '';
+  position: absolute;
+  background: rgba(201, 162, 39, 0.12);
+}
+/* Bottom-left to center fold */
+.envelope-pattern::before {
+  width: 1px;
+  height: 141%;
+  bottom: 0;
+  left: 0;
+  transform-origin: bottom left;
+  transform: rotate(-35deg);
+}
+/* Bottom-right to center fold */
+.envelope-pattern::after {
+  width: 1px;
+  height: 141%;
+  bottom: 0;
+  right: 0;
+  transform-origin: bottom right;
+  transform: rotate(35deg);
+}
+
+/* Wax seal */
+.envelope-seal {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  width: 52px;
+  height: 52px;
+  background: radial-gradient(circle at 40% 35%, #e8b84b, #9a6e00);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+  z-index: 3;
+  transition: transform 0.4s, opacity 0.4s;
+  font-family: 'Amiri', serif;
+  font-size: 1.5rem;
+  color: var(--sky-deep);
+  font-weight: 700;
+}
+
+/* Envelope flap (the triangular top fold) */
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(180deg, #2a1f6a 0%, var(--envelope-bg) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  transform: rotateX(0deg);
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 4;
+  backface-visibility: hidden;
+}
+
+/* The letter hidden inside */
+.envelope-letter {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  background: linear-gradient(160deg, #f5ece0 0%, #ede0c8 100%);
+  border-radius: 4px;
+  height: calc(100% - 20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(60px);
+  opacity: 0;
+  transition: transform 0.7s 0.4s cubic-bezier(0.2, 0.8, 0.4, 1), opacity 0.5s 0.3s;
+  z-index: 2;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+}
+.letter-inner {
+  text-align: center;
+  color: var(--sky-deep);
+}
+.letter-moon { font-size: 2rem; display: block; margin-bottom: 0.3rem; }
+.letter-inner p {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.9rem;
+  color: #3a2a00;
+}
+
+/* ---- Envelope open state ---- */
+.envelope.open .envelope-flap {
+  transform: rotateX(-175deg);
+}
+.envelope.open .envelope-letter {
+  transform: translateY(-20px);
+  opacity: 1;
+}
+.envelope.open .envelope-seal {
+  transform: translate(-50%, 50%) scale(0);
+  opacity: 0;
+}
+.envelope.open {
+  animation: none; /* stop floating when open */
+}
+
+/* ---------- SCREEN 3: GREETING ---------- */
+#greetingScreen {
+  overflow-y: auto;
+  align-items: flex-start;
+  padding: 80px 1rem 2rem;
+}
+
+.greeting-content {
+  max-width: 620px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.greeting-ornament { opacity: 0.75; }
+.greeting-ornament.bottom { transform: scaleY(-1); }
+
+.greeting-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+  font-weight: 700;
+  color: var(--gold-pale);
+  text-shadow: 0 0 50px rgba(201,162,39,0.5);
+  line-height: 1.3;
+}
+.name-highlight {
+  color: var(--gold-light);
+  display: inline;
+}
+.moon-emoji { display: inline-block; animation: moonBob 3s ease-in-out infinite; }
+@keyframes moonBob {
+  0%, 100% { transform: rotate(0deg); }
+  50%       { transform: rotate(15deg) translateY(-4px); }
+}
+
+/* Message typing box */
+.message-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 14px;
+  padding: 1.4rem 2rem;
+  min-height: 72px;
+  width: 100%;
+  max-width: 520px;
+  position: relative;
+}
+.typing-text {
+  font-family: 'Amiri', serif;
+  font-size: 1.22rem;
+  color: var(--text-main);
+  line-height: 1.7;
+  font-style: italic;
+  display: inline;
+}
+.cursor {
+  display: inline-block;
+  color: var(--gold);
+  font-weight: 100;
+  font-size: 1.3rem;
+  animation: blink 0.9s step-end infinite;
+  vertical-align: middle;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Photo frame */
+.photo-frame {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0.5rem auto;
+}
+.photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+/* Golden decorative ring around photo */
+.photo-border {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: conic-gradient(var(--gold) 0%, var(--gold-pale) 25%, var(--gold) 50%, var(--sky-deep) 51%, var(--sky-deep) 100%) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  animation: rotateBorder 8s linear infinite;
+}
+@keyframes rotateBorder {
+  to { transform: rotate(360deg); }
+}
+
+/* Blessing button — reuses btn-primary but with a blessing variant */
+.blessing-btn { margin-top: 0.4rem; }
+
+/* Blessing reveal box */
+.blessing-box {
+  background: linear-gradient(135deg, rgba(201,162,39,0.08) 0%, rgba(201,162,39,0.03) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 14px;
+  padding: 1.8rem 2rem;
+  width: 100%;
+  max-width: 480px;
+  animation: blessingReveal 0.8s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  margin-bottom: 2rem;
+}
+@keyframes blessingReveal {
+  from { opacity: 0; transform: scale(0.85) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.blessing-inner { text-align: center; }
+.blessing-icon {
+  display: block;
+  font-size: 2.2rem;
+  margin-bottom: 0.8rem;
+  color: var(--gold);
+  animation: iconSpin 1s 0.2s both;
+}
+@keyframes iconSpin {
+  from { transform: rotateY(90deg) scale(0.5); opacity: 0; }
+  to   { transform: rotateY(0deg) scale(1);   opacity: 1; }
+}
+.blessing-text {
+  font-family: 'Amiri', serif;
+  font-size: 1.3rem;
+  color: var(--gold-light);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ---------- FADE-IN KEYFRAME ---------- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- SCROLLBAR (greeting screen) ---------- */
+#greetingScreen::-webkit-scrollbar { width: 5px; }
+#greetingScreen::-webkit-scrollbar-track { background: transparent; }
+#greetingScreen::-webkit-scrollbar-thumb { background: rgba(201,162,39,0.3); border-radius: 10px; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 480px) {
+  .moon-container { width: 75px; height: 75px; right: 20px; top: 20px; }
+  .landing-title  { font-size: 1.3rem; }
+  .greeting-title { font-size: 1.4rem; }
+  .message-box    { padding: 1rem 1.2rem; }
+  .photo-frame    { width: 140px; height: 140px; }
+  #greetingScreen { padding-top: 60px; }
+}

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eid Mubarak 🌙</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts: Amiri for Arabic-inspired display, Lato for body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CANVAS: Used for star field + confetti
+  ============================================================ -->
+  <canvas id="starCanvas"></canvas>
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- ============================================================
+       CRESCENT MOON (SVG inline so no image file needed)
+  ============================================================ -->
+  <div class="moon-container" id="moonContainer">
+    <svg class="moon-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fffbe6"/>
+          <stop offset="60%" stop-color="#f5d78e"/>
+          <stop offset="100%" stop-color="#c9a227" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Glow halo -->
+      <circle cx="60" cy="60" r="54" fill="url(#moonGlow)" opacity="0.25"/>
+      <!-- Crescent shape: full circle minus offset circle -->
+      <path d="M60,15 A45,45 0 1,1 60,105 A30,30 0 1,0 60,15 Z" fill="#f5d78e" filter="url(#glow)"/>
+      <!-- Subtle craters -->
+      <circle cx="72" cy="48" r="4" fill="#e8c96b" opacity="0.5"/>
+      <circle cx="65" cy="68" r="2.5" fill="#e8c96b" opacity="0.4"/>
+    </svg>
+  </div>
+
+  <!-- ============================================================
+       GEOMETRIC ORNAMENT (top center, decorative)
+  ============================================================ -->
+  <div class="ornament-top" aria-hidden="true">✦ ✦ ✦</div>
+
+  <!-- ============================================================
+       SCREEN 1: LANDING
+  ============================================================ -->
+  <section id="landingScreen" class="screen active">
+    <div class="landing-content">
+      <p class="landing-subtitle">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <h1 class="landing-title">Someone prepared a<br /><em>special Eid surprise</em><br />for you.</h1>
+      <div class="ornament-divider">
+        <span class="line"></span><span class="star-ornament">❋</span><span class="line"></span>
+      </div>
+      <button class="btn-primary" id="openSurpriseBtn">
+        <span class="btn-text">Open your Eid surprise</span>
+        <span class="btn-glow"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 2: ENVELOPE
+  ============================================================ -->
+  <section id="envelopeScreen" class="screen">
+    <div class="envelope-wrapper">
+      <p class="tap-hint">A gift awaits inside…</p>
+      <div class="envelope" id="envelope">
+        <!-- Envelope back (body) -->
+        <div class="envelope-body">
+          <!-- Decorative pattern on front -->
+          <div class="envelope-pattern"></div>
+          <div class="envelope-seal" id="seal">
+            <span>ع</span><!-- Arabic letter 'Ain, decorative -->
+          </div>
+        </div>
+        <!-- Envelope flap (top fold that opens) -->
+        <div class="envelope-flap" id="flap"></div>
+        <!-- Letter inside -->
+        <div class="envelope-letter" id="letter">
+          <div class="letter-inner">
+            <span class="letter-moon">🌙</span>
+            <p>Eid Mubarak</p>
+          </div>
+        </div>
+      </div>
+      <button class="btn-secondary" id="openEnvelopeBtn">Tap to open</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 3: MAIN GREETING
+  ============================================================ -->
+  <section id="greetingScreen" class="screen">
+    <div class="greeting-content">
+
+      <!-- Ornamental top flourish -->
+      <div class="greeting-ornament" aria-hidden="true">
+        <svg width="220" height="30" viewBox="0 0 220 30">
+          <line x1="0" y1="15" x2="85" y2="15" stroke="#c9a227" stroke-width="0.8" opacity="0.6"/>
+          <polygon points="95,15 100,8 105,15 100,22" fill="#c9a227" opacity="0.8"/>
+          <circle cx="110" cy="15" r="4" fill="none" stroke="#c9a227" stroke-width="1" opacity="0.9"/>
+          <polygon points="115,15 120,8 125,15 120,22" fill="#c9a227" opacity="0.8"/>
+          <line x1="135" y1="15" x2="220" y2="15" stroke="#c9a227" stroke-width="0.8" opacity="0.6"/>
+        </svg>
+      </div>
+
+      <!-- Personalized heading -->
+      <h2 class="greeting-title">
+        Eid Mubarak <span id="recipientName" class="name-highlight"></span> <span class="moon-emoji">🌙</span>
+      </h2>
+
+      <!-- Typing message -->
+      <div class="message-box">
+        <p id="typingMessage" class="typing-text"></p>
+        <span class="cursor" id="cursor">|</span>
+      </div>
+
+      <!-- Personalized photo (shown only if a match exists) -->
+      <div class="photo-frame" id="photoFrame" style="display:none;">
+        <img id="personalPhoto" src="" alt="Eid greeting photo" />
+        <div class="photo-border"></div>
+      </div>
+
+      <!-- Bottom ornament + CTA -->
+      <div class="greeting-ornament bottom" aria-hidden="true">
+        <svg width="220" height="30" viewBox="0 0 220 30">
+          <line x1="0" y1="15" x2="85" y2="15" stroke="#c9a227" stroke-width="0.8" opacity="0.6"/>
+          <polygon points="95,15 100,8 105,15 100,22" fill="#c9a227" opacity="0.8"/>
+          <circle cx="110" cy="15" r="4" fill="none" stroke="#c9a227" stroke-width="1" opacity="0.9"/>
+          <polygon points="115,15 120,8 125,15 120,22" fill="#c9a227" opacity="0.8"/>
+          <line x1="135" y1="15" x2="220" y2="15" stroke="#c9a227" stroke-width="0.8" opacity="0.6"/>
+        </svg>
+      </div>
+
+      <button class="btn-primary blessing-btn" id="revealBlessingBtn" style="display:none;">
+        <span class="btn-text">✨ Reveal your Eid blessing</span>
+        <span class="btn-glow"></span>
+      </button>
+
+      <!-- Blessing box (hidden until revealed) -->
+      <div class="blessing-box" id="blessingBox" style="display:none;">
+        <div class="blessing-inner">
+          <span class="blessing-icon">☽</span>
+          <p id="blessingText" class="blessing-text"></p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
