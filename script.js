@@ -138,14 +138,22 @@ const envelope     = document.getElementById('envelope');
 const openEnvBtn   = document.getElementById('openEnvelopeBtn');
 
 function openEnvelope() {
-  // 1. Play open animation
+  // 1. Play chime sound effect
+  const chime = document.getElementById('chimeSound');
+  if (chime) {
+    chime.currentTime = 0;
+    chime.volume = 0.7;
+    chime.play().catch(() => {}); // Ignore if browser blocks autoplay
+  }
+
+  // 2. Play open animation
   envelope.classList.add('open');
   openEnvBtn.style.display = 'none';
 
-  // 2. After the letter rises, transition to the greeting screen
+  // 3. After the letter rises, transition to the greeting screen
   setTimeout(() => {
     showScreen('greetingScreen');
-    // 3. Populate greeting once screen is visible
+    // 4. Populate greeting once screen is visible
     setTimeout(populateGreeting, 600);
   }, 1400);
 }
@@ -181,17 +189,24 @@ function populateGreeting() {
   const photoEl    = document.getElementById('personalPhoto');
 
   if (photoSrc) {
-    // Only show the frame after the image actually loads to avoid broken icons
     photoEl.onload = () => {
       photoFrame.style.display = 'block';
       photoFrame.style.animation = 'fadeInUp 0.8s 0.3s both';
     };
-    photoEl.onerror = () => {
-      // Silently hide if file not found (placeholder not uploaded yet)
-      photoFrame.style.display = 'none';
-    };
+    photoEl.onerror = () => { photoFrame.style.display = 'none'; };
     photoEl.src = photoSrc;
   }
+
+  // 6e. Try to show voice message player
+  // The player appears only if audio/eid.mp3 exists and loads successfully
+  initVoicePlayer();
+
+  // 6f. Show guest book after a short delay (feels more natural)
+  setTimeout(() => {
+    const guestbook = document.getElementById('guestbook');
+    guestbook.style.display = 'block';
+    guestbook.style.animation = 'fadeInUp 0.8s both';
+  }, 2000);
 }
 
 /* ============================================================
@@ -367,3 +382,127 @@ document.getElementById('revealBlessingBtn').addEventListener('click', () => {
     requestAnimationFrame(tick);
   };
 })();
+
+/* ============================================================
+   10. VOICE MESSAGE PLAYER
+   Shows a custom audio player if audio/eid.mp3 is present.
+   Gracefully hidden if the file is missing.
+============================================================ */
+function initVoicePlayer() {
+  const audio     = document.getElementById('voiceMessage');
+  const player    = document.getElementById('voicePlayer');
+  const playBtn   = document.getElementById('voicePlayBtn');
+  const playIcon  = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  const fill      = document.getElementById('voiceProgressFill');
+  const timeEl    = document.getElementById('voiceTime');
+  const wave      = player.querySelector('.voice-wave');
+
+  // Only show player if the audio file actually loads
+  audio.addEventListener('canplaythrough', () => {
+    player.style.display = 'block';
+  }, { once: true });
+
+  audio.addEventListener('error', () => {
+    player.style.display = 'none'; // Silently hide if file missing
+  });
+
+  // Format seconds → m:ss
+  function fmtTime(s) {
+    const m   = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  }
+
+  // Play / pause toggle
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      playIcon.style.display  = 'none';
+      pauseIcon.style.display = 'block';
+      wave.classList.remove('paused');
+    } else {
+      audio.pause();
+      playIcon.style.display  = 'block';
+      pauseIcon.style.display = 'none';
+      wave.classList.add('paused');
+    }
+  });
+
+  // Update progress bar and timestamp
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    fill.style.width   = pct + '%';
+    timeEl.textContent = fmtTime(audio.currentTime);
+  });
+
+  // Reset when audio ends
+  audio.addEventListener('ended', () => {
+    playIcon.style.display  = 'block';
+    pauseIcon.style.display = 'none';
+    fill.style.width        = '0%';
+    timeEl.textContent      = '0:00';
+    wave.classList.add('paused');
+  });
+}
+
+/* ============================================================
+   11. GUEST BOOK — submit reply to Formspree
+============================================================ */
+const FORMSPREE_URL = 'https://formspree.io/f/myknnrpp';
+
+document.getElementById('gbSubmitBtn').addEventListener('click', async () => {
+  const nameVal    = document.getElementById('gbName').value.trim();
+  const messageVal = document.getElementById('gbMessage').value.trim();
+
+  // Simple shake feedback when fields are empty
+  if (!nameVal || !messageVal) {
+    const wrap = document.getElementById('guestbookFormWrap');
+    wrap.style.animation = 'none';
+    wrap.offsetHeight; // force reflow
+    wrap.style.animation = 'shake 0.4s ease';
+    return;
+  }
+
+  const btn = document.getElementById('gbSubmitBtn');
+  btn.querySelector('.btn-text').textContent = 'Sending…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(FORMSPREE_URL, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body   : JSON.stringify({
+        name     : nameVal,
+        message  : messageVal,
+        recipient: RECIPIENT,          // who the greeting was sent to
+        page     : window.location.href,
+      }),
+    });
+
+    if (res.ok) {
+      document.getElementById('guestbookFormWrap').style.display = 'none';
+      document.getElementById('guestbookSuccess').style.display  = 'block';
+    } else {
+      throw new Error('Submit failed');
+    }
+  } catch {
+    btn.querySelector('.btn-text').textContent = 'Send your wish 🌙';
+    btn.disabled = false;
+    alert('Something went wrong — please try again.');
+  }
+});
+
+// Inject shake keyframe for empty-field validation
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+  @keyframes shake {
+    0%,100% { transform: translateX(0);   }
+    20%     { transform: translateX(-8px); }
+    40%     { transform: translateX(8px);  }
+    60%     { transform: translateX(-5px); }
+    80%     { transform: translateX(5px);  }
+  }
+`;
+document.head.appendChild(shakeStyle);
